@@ -1,6 +1,10 @@
 # zentao_crawl
 
-安装依赖的python包
-```
-pip install Scrapy
-```
+## 如何运行
+
+## 开发过程
+- 安装依赖的python包
+  ```shell
+  pip install scrapy
+  ```
+- 
