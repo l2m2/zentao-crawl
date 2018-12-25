@@ -7,4 +7,7 @@
   ```shell
   pip install scrapy
   ```
-- 
+- 新建scrapy工程
+  ```
+  scrapy startproject zentaocrawl
+  ```
