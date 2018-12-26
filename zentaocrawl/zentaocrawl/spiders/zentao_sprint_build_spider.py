@@ -9,6 +9,7 @@ from scrapy.http import Request, FormRequest
 import os
 import sys
 from configparser import ConfigParser
+import json
 
 def as_dict(config):
   """
@@ -91,3 +92,21 @@ class ZentaoSprintBuildSpider(scrapy.Spider):
     with open(filename, 'wb') as f:
       f.write(response.body)
     self.log('Saved file %s' % filename)
+
+    bugs = []
+    stories = []
+    for tr in response.css('#bugList tr'):
+      if tr.css('td:nth-child(3)::text').re_first(r'\s*(.*)') == "已解决":
+        bug_id = tr.css('td:nth-child(1)>input::attr(value)').re_first(r'\s*(.*)')
+        bug_title = tr.css('td:nth-child(2)>a::text').re_first(r'\s*(.*)')
+        bugs.append('{id} {title}'.format(id=bug_id, title=bug_title))
+    for tr in response.css('#storyList tr'):
+      if tr.css('td:nth-child(7)::text').re_first(r'\s*(.*)') == "研发完毕":
+        story_id = tr.css('td:nth-child(1)>input::attr(value)').re_first(r'\s*(.*)')
+        story_title = tr.css('td:nth-child(3)>a::text').re_first(r'\s*(.*)')
+        stories.append('{id} {title}'.format(id=story_id, title=story_title))
+    result_filename = page.split('.')[0] + '.json'
+    content = json.dumps({'bugs': bugs, 'stories': stories}, indent=4, sort_keys=True)
+    with open(result_filename, 'w') as f:
+      f.write(content)
+    self.log('Saved file %s' % result_filename)
