@@ -7,7 +7,6 @@
 
 import scrapy
 
-
 class ZentaocrawlItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()

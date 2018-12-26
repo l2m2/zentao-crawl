@@ -65,9 +65,27 @@ class ZentaoSprintBuildSpider(scrapy.Spider):
     )]
 
   def after_login(self, response):
-    yield Request(self.zentao_config_dict['zentao']['project_build_page'], callback=self.parse)
+    yield Request(self.zentao_config_dict['zentao']['project_build_page'], callback=self.parse_sprint_build)
 
-  def parse(self, response):
+  def parse_sprint_build(self, response):
+    page = response.url.split("/")[-1]
+    filename = page
+    with open(filename, 'wb') as f:
+      f.write(response.body)
+    self.log('Saved file %s' % filename)
+
+    builds = response.css('#buildList td')
+    if builds is None:
+      print("Error: response.css('#buildList td').")
+      sys.exit(1)
+    build_id = builds[0].css('td:nth-child(1)::text').extract_first()
+    if build_id is None:
+      print("Error: builds[0].css('td:nth-child(1)::text')")
+      sys.exit(1)
+    lastest_build_url = self.zentao_config_dict['zentao']['sprint_build_url_template'].format(id=build_id)
+    yield Request(lastest_build_url, self.parse_latest_build)
+
+  def parse_latest_build(self, response):
     page = response.url.split("/")[-1]
     filename = page
     with open(filename, 'wb') as f:
