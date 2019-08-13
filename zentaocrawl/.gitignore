@@ -1,3 +1,6 @@
 zentao.ini
 __pycache__/
 spiders/__pycache__/
+build-view*.html
+build-view*.json
+project-build*.html
