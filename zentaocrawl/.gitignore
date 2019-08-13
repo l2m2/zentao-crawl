@@ -1,1 +1,3 @@
 zentao.ini
+__pycache__/
+spiders/__pycache__/
